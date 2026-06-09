@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Spotify Lyrics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Body — posición y visibilidad ────────────────────── */
+        body {
+            background: transparent;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            /* Por defecto: canción CON letra → overlay abajo */
+            align-items: flex-end;
+            justify-content: flex-start;
+            padding: 20px;
+            transition: align-items 0s;
+            /* sin transición en el enum */
+        }
+
+        /* ── Caja principal ─────────────────────────────────── */
+        #overlay {
+            /* Valores que el usuario ha personalizado */
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 20px;
+            border: 2.5px solid #1db954;
+            width: 100%;
+            max-width: 650px;
+            padding: 18px 22px;
+            overflow: hidden;
+
+            /* Transiciones para mostrar/ocultar/compactar */
+            transition: opacity 0.45s ease,
+                transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Posición normal: abajo a la izquierda */
+            transform: translateY(0) scale(1);
+        }
+
+        /* Cuando no hay letras, sube el widget entero un poco para centrarse
+           en el espacio que ocuparían las letras */
+        #overlay.compact {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transform: translateY(-85px) scale(1);
+        }
+
+        /* Sin música (pausado) → ocultar todo con fadeout */
+        body.no-playback #overlay {
+            opacity: 0;
+            transform: translateY(16px) scale(0.97);
+            pointer-events: none;
+        }
+
+        /* Si está pausado Y era compacto, que también se oculte con una transición suave desde su posición */
+        body.no-playback #overlay.compact {
+            opacity: 0;
+            transform: translateY(-69px) scale(0.97);
+            pointer-events: none;
+        }
+
+        /* ── Zona de letras ─────────────────────────────────── */
+        #lyrics-wrap {
+            overflow: hidden;
+            max-height: 600px;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s ease,
+                margin 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 14px;
+            opacity: 1;
+        }
+
+        #lyrics-wrap.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        #lyrics-container {
+            height: 190px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            /* Degradado que oculta los extremos del scroll */
+            mask-image: linear-gradient(to bottom,
+                    transparent 0%,
+                    black 16%,
+                    black 84%,
+                    transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom,
+                    transparent 0%,
+                    black 16%,
+                    black 84%,
+                    transparent 100%);
+        }
+
+        #lyrics-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Línea de letra — énfasis mediante color + peso, sin scale (evita clipping) */
+        .lyric-line {
+            font-size: 22px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.30);
+            padding: 7px 0;
+            width: 80%; /* Al limitar el ancho al 80%, el scale(1.22) nunca excede el 97% del total, eliminando clipping */
+            line-height: 1.45;
+            word-break: break-word;
+            white-space: normal;
+            transform-origin: left center;
+            transform: scale(1);
+            will-change: transform, color;
+            transition: color 0.35s ease,
+                font-weight 0.35s ease,
+                transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                text-shadow 0.35s ease;
+        }
+
+        .lyric-line.active {
+            color: #1db954;
+            font-weight: 800;
+            transform: scale(1.22); /* Más grande y fácil de leer */
+            /* Glow prominente */
+            text-shadow:
+                0 0 12px rgba(29, 185, 84, 0.70),
+                0 0 28px rgba(29, 185, 84, 0.35);
+        }
+
+        /* ── Separador ─────────────────────────────────────── */
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.09);
+            margin: 0 0 14px 0;
+            transition: opacity 0.4s ease, margin 0.45s ease;
+            opacity: 1;
+        }
+
+        .divider.hidden {
+            opacity: 0;
+            margin: 0;
+        }
+
+        /* ── Info de canción ────────────────────────────────── */
+        #track-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        #cover {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            display: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+        }
+
+        /* En modo compacto (sin letra) la portada es un poco más grande */
+        /* En modo compacto (sin letra) la portada es un poco más grande */
+        #overlay.compact #cover {
+            width: 60px;
+            height: 60px;
+        }
+
+        .track-details {
+            overflow: hidden;
+            flex: 1;
+        }
+
+        #title {
+            font-size: 18px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        #overlay.compact #title {
+            font-size: 20px;
+        }
+
+        #artist {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.50);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Barra de progreso ─────────────────────────────── */
+        #progress-bar-wrap {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #progress-bar-wrap.hidden {
+            display: none;
+        }
+
+        .time-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.40);
+            font-weight: 700;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        #progress-bar {
+            flex: 1;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #1db954;
+            border-radius: 3px;
+            transition: width 0.25s linear;
+        }
+
+        /* Transiciones fluidas en el overlay */
+    </style>
+</head>
+
+<body class="no-playback">
+    <div id="overlay">
+        <div id="lyrics-wrap">
+            <div id="lyrics-container"></div>
+        </div>
+
+        <hr class="divider" id="divider">
+
+        <div id="track-info">
+            <img id="cover" src="" alt="Cover">
+            <div class="track-details">
+                <p id="title">Esperando a Spotify…</p>
+                <p id="artist"></p>
+            </div>
+        </div>
+
+        <div id="progress-bar-wrap" class="hidden">
+            <span class="time-label" id="time-current">0:00</span>
+            <div id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <span class="time-label" id="time-total">0:00</span>
+        </div>
+    </div>
+
+    <script>
+        // ── Elementos ────────────────────────────────────────────────
+        const bodyEl = document.body;
+        const overlayEl = document.getElementById('overlay');
+        const lyricsWrap = document.getElementById('lyrics-wrap');
+        const lyricsEl = document.getElementById('lyrics-container');
+        const dividerEl = document.getElementById('divider');
+        const coverEl = document.getElementById('cover');
+        const titleEl = document.getElementById('title');
+        const artistEl = document.getElementById('artist');
+        const pbWrap = document.getElementById('progress-bar-wrap');
+        const pbFill = document.getElementById('progress-fill');
+        const timeCurrent = document.getElementById('time-current');
+        const timeTotal = document.getElementById('time-total');
+
+        // ── Estado ───────────────────────────────────────────────────
+        let ws;
+        let currentLyrics = [];
+        let activeIndex = -1;
+        let trackDuration = 0;   // segundos
+
+        // Clock local para avanzar aunque Spotify esté minimizado
+        let syncedPositionMs = 0;    // posición confirmada por el plugin
+        let syncedWallTime = 0;    // performance.now() en el momento de sincronía
+        let isPlaying = false;
+
+        // Posición calculada localmente en este instante
+        function currentPositionMs() {
+            if (!isPlaying || syncedWallTime === 0) return syncedPositionMs;
+            return syncedPositionMs + (performance.now() - syncedWallTime);
+        }
+
+        // ── WebSocket ────────────────────────────────────────────────
+        function connect() {
+            ws = new WebSocket("ws://127.0.0.1:8989");
+            ws.onmessage = e => handleMessage(JSON.parse(e.data));
+            ws.onclose = () => {
+                bodyEl.classList.add('no-playback');
+                isPlaying = false;
+                syncedWallTime = 0;
+                lastProgressTime = 0;
+                setTimeout(connect, 2000);
+            };
+            ws.onerror = () => ws.close();
+        }
+
+        function handleMessage(data) {
+            if (data.type === "progress" || data.type === "playstate") {
+                lastProgressTime = performance.now();
+            }
+            switch (data.type) {
+                case "track": updateTrack(data); break;
+                case "progress": syncProgress(data); break;
+                case "playstate": applyPlayState(data); break;
+            }
+        }
+
+        // ── Sync de progreso ─────────────────────────────────────────
+        function syncProgress(data) {
+            // El plugin envía Date.now() como wallTime.
+            // Calculamos el desfase de red (≈0 en localhost) y ajustamos.
+            const networkDelay = Date.now() - (data.wallTime ?? Date.now());
+            syncedPositionMs = data.time + networkDelay;
+            syncedWallTime = performance.now();
+            applyPlayState(data);
+        }
+
+        function applyPlayState(data) {
+            const wasPlaying = isPlaying;
+            isPlaying = data.playing !== false;
+
+            if (!isPlaying) {
+                // Congela la posición al momento de pausar
+                syncedPositionMs = data.time ?? syncedPositionMs;
+                syncedWallTime = 0;
+                bodyEl.classList.add('no-playback');
+            } else {
+                bodyEl.classList.remove('no-playback');
+                if (!wasPlaying) {
+                    // Reanudando: resincronizar wall time
+                    syncedWallTime = performance.now();
+                }
+            }
+        }
+
+        // ── Actualizar canción ───────────────────────────────────────
+        function updateTrack(data) {
+            if (!data.title) return;
+
+            titleEl.textContent = data.title;
+            artistEl.textContent = data.artist ?? "";
+            trackDuration = data.duration ?? 0;
+
+            if (data.cover) {
+                coverEl.src = data.cover;
+                coverEl.style.display = "block";
+            } else {
+                coverEl.style.display = "none";
+            }
+
+            // Barra de progreso — sólo si hay duración
+            if (trackDuration > 0) {
+                pbWrap.classList.remove('hidden');
+                timeTotal.textContent = fmtTime(trackDuration);
+            } else {
+                pbWrap.classList.add('hidden');
+            }
+
+            // Resetear lyrics
+            let lyricsList = data.lyrics ?? [];
+            if (lyricsList.length > 1 && lyricsList.every(l => Number(l.time) === 0)) {
+                lyricsList = [];
+            }
+            currentLyrics = lyricsList;
+            activeIndex = -1;
+            lyricsEl.innerHTML = '';
+
+            if (currentLyrics.length === 0) {
+                // Modo compacto: el overlay se encoge, la info sube dentro
+                lyricsWrap.classList.add('collapsed');
+                dividerEl.classList.add('hidden');
+                overlayEl.classList.add('compact');
+            } else {
+                lyricsWrap.classList.remove('collapsed');
+                dividerEl.classList.remove('hidden');
+                overlayEl.classList.remove('compact');
+
+                // Esperar render para leer clientHeight correcto
+                requestAnimationFrame(() => {
+                    const half = Math.floor(lyricsEl.clientHeight / 2);
+
+                    const top = document.createElement('div');
+                    top.style.height = half + 'px';
+                    lyricsEl.appendChild(top);
+
+                    currentLyrics.forEach((line, i) => {
+                        const el = document.createElement('div');
+                        el.className = 'lyric-line';
+                        el.id = `l${i}`;
+                        el.textContent = line.text || "♪";
+                        lyricsEl.appendChild(el);
+                    });
+
+                    const bot = document.createElement('div');
+                    bot.style.height = half + 'px';
+                    lyricsEl.appendChild(bot);
+                });
+            }
+
+            // Mostrar overlay si estaba oculto
+            bodyEl.classList.remove('no-playback');
+            isPlaying = true;
+            syncedWallTime = performance.now();
+        }
+
+        // ── Sincronizar línea activa ─────────────────────────────────
+        function syncLyrics(ms) {
+            if (!currentLyrics.length) return;
+
+            let idx = -1;
+            for (let i = 0; i < currentLyrics.length; i++) {
+                if (ms + 200 >= currentLyrics[i].time) idx = i;
+                else break;
+            }
+
+            if (idx === activeIndex) return;
+
+            if (activeIndex !== -1) {
+                document.getElementById(`l${activeIndex}`)?.classList.remove('active');
+            }
+
+            activeIndex = idx;
+            if (idx === -1) return;
+
+            const line = document.getElementById(`l${idx}`);
+            if (!line) return;
+
+            line.classList.add('active');
+
+            // Centrar la línea en el contenedor
+            // transform no cambia offsetTop → cálculo siempre estable
+            const mid = lyricsEl.clientHeight / 2;
+            lyricsEl.scrollTo({
+                top: Math.max(0, line.offsetTop + line.offsetHeight / 2 - mid),
+                behavior: 'smooth'
+            });
+        }
+
+        // ── Barra de progreso ────────────────────────────────────────
+        function fmtTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60).toString().padStart(2, '0');
+            return `${m}:${sec}`;
+        }
+
+        function updateProgressBar(ms) {
+            if (trackDuration <= 0) return;
+            const pct = Math.min(100, (ms / 1000) / trackDuration * 100);
+            pbFill.style.width = pct + '%';
+            timeCurrent.textContent = fmtTime(ms / 1000);
+        }
+
+        // ── Detección de pausa por timeout (fallback si el plugin no manda playing) ──
+        let lastProgressTime = 0;
+        const PAUSE_TIMEOUT_MS = 60000; // tolerar hasta 60s sin recibir mensajes por throttling de ventana minimizada
+
+        // Tick principal ─────────────────────────────────────────
+        setInterval(() => {
+            // Fallback de pausa: si llevan más de PAUSE_TIMEOUT_MS sin mensajes
+            if (lastProgressTime > 0 && (performance.now() - lastProgressTime) > PAUSE_TIMEOUT_MS) {
+                if (isPlaying) {
+                    isPlaying = false;
+                    syncedPositionMs = currentPositionMs();
+                    syncedWallTime = 0;
+                    bodyEl.classList.add('no-playback');
+                }
+            }
+
+            const ms = currentPositionMs();
+            syncLyrics(ms);
+            updateProgressBar(ms);
+        }, 50);
+
+        connect();
+    </script>
+</body>
+
+</html>
