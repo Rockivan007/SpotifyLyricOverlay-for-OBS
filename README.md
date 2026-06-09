@@ -15,9 +15,9 @@ A custom OBS widget that displays Spotify lyrics in real time with a clean now p
 This dynamic and elegant overlay widget displays Spotify real-time synchronized lyrics on OBS Studio.
 
 ## Requirements
-* [**Spotify**](https://www.spotify.com/download/)[web:2] (official desktop app, not the Microsoft Store version).
-* [**Spicetify**](https://spicetify.app/index.html)[web:6] installed and configured on Spotify.
-* [**Python 3**](https://www.python.org/downloads/)[web:7] installed (to run the local WebSocket server).
+* [**Spotify**](https://www.spotify.com/download/) (official desktop app, not the Microsoft Store version).
+* [**Spicetify**](https://spicetify.app/index.html) installed and configured on Spotify.
+* [**Python 3**](https://www.python.org/downloads/) installed (to run the local WebSocket server).
 
 ## Installation & Usage Instructions
 
@@ -58,9 +58,9 @@ python server.py
 Este widget dinámico y elegante muestra las letras sincronizadas en tiempo real de Spotify en OBS Studio.
 
 ## Requisitos
-* [**Spotify**](https://www.spotify.com/download/)[web:2] (versión de escritorio oficial, no la de la tienda de Microsoft).
-* [**Spicetify**](https://spicetify.app/index.html)[web:6] instalado y configurado en Spotify.
-* [**Python 3**](https://www.python.org/downloads/)[web:7] instalado (para correr el servidor WebSocket local).
+* [**Spotify**](https://www.spotify.com/download/) (versión de escritorio oficial, no la de la tienda de Microsoft).
+* [**Spicetify**](https://spicetify.app/index.html) instalado y configurado en Spotify.
+* [**Python 3**](https://www.python.org/downloads/) instalado (para correr el servidor WebSocket local).
 
 ## Instrucciones de Instalación y Uso
 
