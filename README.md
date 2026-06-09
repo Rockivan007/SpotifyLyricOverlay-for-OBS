@@ -83,14 +83,38 @@ python server.py
 
 ---
 
-# License - Non-Commercial Attribution
+# License - Non-Commercial Attribution with Corporate Use Exception
 
 Copyright (c) 2026 rockivan 007
 
-You are free to use, copy, modify, and share this software and its source code for **non-commercial purposes only**, under the following conditions:
+You are free to use, copy, modify, and share this software and its source code under the following conditions:
+
+### For Individuals and Organizations (Including Companies):
 
 - You **must give appropriate credit** to the original author (`rockivan 007`) in your project, documentation, or about page.  
 - You **must include a copy** of this license (or a clear link to it) in any copy or fork of this project.  
-- You **may not sell** this software, sublicense it for a fee, or use it in any product or service that charges money or requires payment to access its main functionality.  
+- **Companies and businesses are permitted to use this software freely without paying any fee**, including in their own products and services.  
+
+### Commercial Restrictions:
+
+- You **may not sell** this software directly, sublicense it for a fee, or use it in any product or service where **this project is the main functionality being charged for**.  
+- You **may not sell this software as a paid extension** or premium feature that users must pay to access.  
+- You **may sell your product or service** that includes this software **only if**:  
+  - This software is included as a **free extension/component** (not a paid feature).  
+  - Appropriate credit is given to `rockivan 007`.  
+  - This software is **not the core product** around which the entire product revolves (i.e., your product must have substantial functionality beyond this software).  
+- You **may modify this project for your internal or commercial use**, but the product cannot be centered entirely around this project.  
+
+### Additional Permission Notice
+
+- **Todo el mundo, incluidas empresas y organizaciones, puede usar este software de forma gratuita siempre que respete las condiciones anteriores.**  
+- Si tu uso previsto **se sale de estos usos o condiciones**, deberás contactar personalmente con el autor para solicitar permiso expreso en: **[contact@furro.es](mailto:contact@furro.es)**  
+
+### Summary
+
+- **Free for all use** (including corporate) when given as a free component with credit.  
+- **Cannot sell this software directly** or as a paid extension/feature.  
+- **Can sell your product** that includes this software as a free component, provided it's not the main focus and credit is given.  
+- **For any use outside these terms, prior permission is required via contact@furro.es**  
 
 This software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the author be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
