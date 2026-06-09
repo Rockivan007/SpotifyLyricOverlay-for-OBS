@@ -5,6 +5,8 @@ A custom OBS widget that displays Spotify lyrics in real time with a clean now p
 
 # OBS Spotify Lyrics Extension
 
+![Spotify Lyric Overlay](https://github.com/Rockivan007/SpotifyLyricOverlay-for-OBS/blob/main/overlay.png?raw=true)
+
 [Español](#español) | [English](#english)
 
 ---
