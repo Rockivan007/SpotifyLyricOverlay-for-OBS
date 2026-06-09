@@ -84,7 +84,7 @@ Copia el archivo `obs_lyrics.js` en tu directorio de extensiones de Spicetify:
 El servidor puente transmite la información en tiempo real desde Spotify hacia OBS. Abre una terminal en esta carpeta y ejecuta:
 ```bash
 python server.py
-``]
+```
 *(Mantén esta ventana abierta mientras hagas stream).*
 
 ### 3. Configurar OBS Studio
@@ -131,4 +131,3 @@ You are free to use, copy, modify, and share this software and its source code u
 - **For any use outside these terms, prior permission is required via contact@furro.es**  
 
 This software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the author be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
-```
