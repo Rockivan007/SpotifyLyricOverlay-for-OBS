@@ -7,7 +7,43 @@ A custom OBS widget that displays Spotify lyrics in real time with a clean now p
 
 ![Spotify Lyric Overlay](https://github.com/Rockivan007/SpotifyLyricOverlay-for-OBS/blob/main/overlay.png?raw=true)
 
-[Español](#español) | [English](#english)
+[English](#english) | [Español](#español)
+
+---
+
+# English
+
+This dynamic and elegant overlay widget displays Spotify real-time synchronized lyrics on OBS Studio.
+
+## Requirements
+* **Spotify** (official desktop app, not the Microsoft Store version).
+* **Spicetify** installed and configured on Spotify.
+* **Python 3** installed (to run the local WebSocket server).
+
+## Installation & Usage Instructions
+
+### 1. Install the Spotify Extension (Spicetify)
+Copy the `obs_lyrics.js` file to your Spicetify extensions folder:
+* **On Windows (PowerShell)**:
+  ```powershell
+  Copy-Item -Path "obs_lyrics.js" -Destination "$env:USERPROFILE\.spicetify\Extensions\" -Force
+  spicetify config extensions obs_lyrics.js
+  spicetify apply
+  ```
+
+### 2. Start the WebSocket Server
+The server acts as a real-time bridge between Spotify and OBS. Open a terminal in this folder and run:
+```bash
+python server.py
+```
+*(Keep this window open while streaming).*
+
+### 3. Configure OBS Studio
+1. Open OBS and add a **Browser** source to your scene.
+2. Check the **Local file** box.
+3. Click **Browse** and select the `index.html` file.
+4. Set the resolution to **650 x 320** (recommended rectangular scale).
+5. Done! When playing music on Spotify, the widget will automatically appear showing the cover art, track info, progress bar, and active green Spotify (`#1db954`) lyrics.
 
 ---
 
@@ -47,45 +83,6 @@ python server.py
 
 ---
 
-# English
-
-This dynamic and elegant overlay widget displays Spotify real-time synchronized lyrics on OBS Studio.
-
-## Requirements
-* **Spotify** (official desktop app, not the Microsoft Store version).
-* **Spicetify** installed and configured on Spotify.
-* **Python 3** installed (to run the local WebSocket server).
-
-## Installation & Usage Instructions
-
-### 1. Install the Spotify Extension (Spicetify)
-Copy the `obs_lyrics.js` file to your Spicetify extensions folder:
-* **On Windows (PowerShell)**:
-  ```powershell
-  Copy-Item -Path "obs_lyrics.js" -Destination "$env:USERPROFILE\.spicetify\Extensions\" -Force
-  spicetify config extensions obs_lyrics.js
-  spicetify apply
-  ```
-
-### 2. Start the WebSocket Server
-The server acts as a real-time bridge between Spotify and OBS. Open a terminal in this folder and run:
-```bash
-python server.py
-```
-*(Keep this window open while streaming).*
-
-### 3. Configure OBS Studio
-1. Open OBS and add a **Browser** source to your scene.
-2. Check the **Local file** box.
-3. Click **Browse** and select the `index.html` file.
-4. Set the resolution to **650 x 320** (recommended rectangular scale).
-5. Done! When playing music on Spotify, the widget will automatically appear showing the cover art, track info, progress bar, and active green Spotify (`#1db954`) lyrics.
-
-
-
-
-
-
 # License - Non-Commercial Attribution
 
 Copyright (c) 2026 rockivan 007
@@ -96,4 +93,4 @@ You are free to use, copy, modify, and share this software and its source code f
 - You **must include a copy** of this license (or a clear link to it) in any copy or fork of this project.  
 - You **may not sell** this software, sublicense it for a fee, or use it in any product or service that charges money or requires payment to access its main functionality.  
 
-This software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the author be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+This software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the author be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
