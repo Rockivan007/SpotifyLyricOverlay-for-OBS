@@ -107,8 +107,8 @@ You are free to use, copy, modify, and share this software and its source code u
 
 ### Additional Permission Notice
 
-- **Todo el mundo, incluidas empresas y organizaciones, puede usar este software de forma gratuita siempre que respete las condiciones anteriores.**  
-- Si tu uso previsto **se sale de estos usos o condiciones**, deberás contactar personalmente con el autor para solicitar permiso expreso en: **[contact@furro.es](mailto:contact@furro.es)**  
+- **Everyone, including companies and organizations, may use this software freely as long as they comply with the conditions above.**  
+- If your intended use falls outside these uses or conditions, you must contact the author personally to request explicit permission at: **[contact@furro.es](mailto:contact@furro.es)**  
 
 ### Summary
 
