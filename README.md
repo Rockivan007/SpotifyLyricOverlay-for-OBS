@@ -1,7 +1,6 @@
 # SpotifyLyricOverlay-for-OBS
+
 A custom OBS widget that displays Spotify lyrics in real time with a clean now playing style, perfect for streams and personalized overlays.
-
-
 
 # OBS Spotify Lyrics Extension
 
@@ -21,6 +20,13 @@ This dynamic and elegant overlay widget displays Spotify real-time synchronized 
 * **Python 3** installed (to run the local WebSocket server).
 
 ## Installation & Usage Instructions
+
+### 0. Install Python Dependencies
+Before running the WebSocket server, you need to install the required Python package:
+```bash
+pip install websockets
+```
+*(This installs the `websockets` library needed for the WebSocket server. Other imports like `asyncio`, `json`, and `logging` are built-in to Python.)*
 
 ### 1. Install the Spotify Extension (Spicetify)
 Copy the `obs_lyrics.js` file to your Spicetify extensions folder:
@@ -57,6 +63,13 @@ Este widget dinámico y elegante muestra las letras sincronizadas en tiempo real
 * **Python 3** instalado (para correr el servidor WebSocket local).
 
 ## Instrucciones de Instalación y Uso
+
+### 0. Instalar Dependencias de Python
+Antes de ejecutar el servidor WebSocket, necesitas instalar el paquete de Python requerido:
+```bash
+pip install websockets
+```
+*(Esto instala la biblioteca `websockets` necesaria para el servidor WebSocket. Los otros imports como `asyncio`, `json` y `logging` son builtin de Python.)*
 
 ### 1. Instalar la extensión en Spotify (Spicetify)
 Copia el archivo `obs_lyrics.js` en tu directorio de extensiones de Spicetify:
